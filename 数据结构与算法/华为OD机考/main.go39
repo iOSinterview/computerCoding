@@ -1,0 +1,38 @@
+package main
+
+import "fmt"
+
+// 绘图机器
+func main() {
+	var N, E int
+	fmt.Scan(&N, &E)
+
+	var res int
+	vec := make([][2]int, N)
+	for i := range vec {
+		fmt.Scan(&vec[i][0], &vec[i][1])
+	}
+	var w, h int
+	for i := 0; i < N; i++ {
+		x, y := vec[i][0], vec[i][1]
+		h += y
+		if x == 0 {
+			res += abs(h)
+			continue
+		}
+		for x-w > 0 {
+			res += abs(h)
+			w++
+		}
+	}
+
+	res += h * (E - w - 1)
+	fmt.Println(res)
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}

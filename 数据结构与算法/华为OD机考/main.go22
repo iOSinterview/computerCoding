@@ -1,0 +1,26 @@
+package main
+
+import "fmt"
+
+// 分割均衡字符串
+func main() {
+	var s string
+	fmt.Scan(&s)
+
+	fmt.Println(f(s))
+}
+
+func f(s string) int {
+	var cnt, res int
+	for i := 0; i < len(s); i++ {
+		if s[i] == 'X' {
+			cnt++
+		} else {
+			cnt--
+		}
+		if cnt == 0 {
+			res++
+		}
+	}
+	return res
+}

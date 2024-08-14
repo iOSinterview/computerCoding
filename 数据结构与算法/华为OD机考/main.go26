@@ -1,0 +1,41 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+	"strings"
+)
+
+// 开源项目热度榜单
+
+type compose struct {
+	name                         string
+	watch, star, fork, issue, mr int
+}
+
+func main() {
+	var N int
+	fmt.Scan(&N)
+	var watch, star, fork, issue, mr int
+	fmt.Scan(&watch, &star, &fork, &issue, &mr)
+	arr := make([]compose, N)
+	for i := range arr {
+		var s string
+		var w, st, f, in, mr int
+		fmt.Scan(&s, &w, &st, &f, &in, &mr)
+		arr[i] = compose{s, w, st, f, in, mr}
+	}
+
+	sort.Slice(arr, func(i, j int) bool {
+		x := arr[i].watch*watch + arr[i].star*star + arr[i].fork*fork + arr[i].issue*issue + arr[i].mr*mr
+		y := arr[j].watch*watch + arr[j].star*star + arr[j].fork*fork + arr[j].issue*issue + arr[j].mr*mr
+		if y == x {
+			return strings.ToLower(arr[i].name) < strings.ToLower(arr[j].name)
+		}
+		return x > y
+	})
+
+	for _, v := range arr {
+		fmt.Println(v.name)
+	}
+}

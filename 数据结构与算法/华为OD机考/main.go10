@@ -1,0 +1,42 @@
+package main
+
+import (
+	"fmt"
+	"unicode"
+)
+
+// 密码输入检测
+func main() {
+	var s string
+	fmt.Scan(&s)
+	scret := []rune{}
+	var upper, lower, num, ex bool
+	for _, ch := range s {
+		if ch == '<' {
+			if len(scret) > 0 {
+				scret = scret[:len(scret)-1]
+			}
+			continue
+		}
+		if upper || unicode.IsUpper(ch) {
+			upper = true
+		}
+		if lower || unicode.IsLower(ch) {
+			lower = true
+		}
+		if num || unicode.IsNumber(ch) {
+			num = true
+		}
+		if ex || (!unicode.IsLetter(ch) && !unicode.IsSpace(ch) && !unicode.IsNumber(ch)) {
+			ex = true
+		}
+		scret = append(scret, ch)
+	}
+
+	fmt.Printf("%s,", string(scret))
+	if len(scret) >= 8 && upper && lower && num && ex {
+		fmt.Printf("true\n")
+	} else {
+		fmt.Printf("false\n")
+	}
+}

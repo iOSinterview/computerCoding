@@ -1,0 +1,26 @@
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+// 出租车计费
+func main() {
+	var N int
+	fmt.Scan(&N)
+
+	str := strconv.Itoa(N)
+	n := len(str)
+	var res int
+	sq := 1
+	for i := 0; i < n; i++ {
+		num := int(str[n-i-1] - '0')
+		if num > 4 {
+			num--
+		}
+		res = res + int(num*sq)
+		sq *= 9
+	}
+	fmt.Println(res)
+}

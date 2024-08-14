@@ -1,0 +1,57 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+// 用连续的自然数之和来表达整数
+func main() {
+	var n int
+	fmt.Scan(&n)
+
+	// var res int
+	nums := make([]int, n)
+	for i := range nums {
+		nums[i] = i + 1
+	}
+	arrs := [][]int{}
+	l, r := 0, 1
+	sum := nums[l]
+	for l < n {
+		if sum > n {
+			sum -= nums[l]
+			l++
+		} else if sum == n {
+			tmp := make([]int, r-l)
+			copy(tmp, nums[l:r])
+			arrs = append(arrs, tmp)
+			sum -= nums[l]
+			l++
+			if r >= n {
+				break
+			}
+			sum += nums[r]
+			r++
+		} else {
+			sum += nums[r]
+			r++
+		}
+	}
+
+	sort.Slice(arrs, func(i, j int) bool {
+		return len(arrs[i]) < len(arrs[j])
+	})
+	for _, arr := range arrs {
+		fmt.Printf("%d=", n)
+		for i, v := range arr {
+			fmt.Printf("%d", v)
+			if i < len(arr)-1 {
+				fmt.Printf("+")
+			}
+		}
+		fmt.Println()
+	}
+
+	fmt.Printf("Result:%d\n", len(arrs))
+}

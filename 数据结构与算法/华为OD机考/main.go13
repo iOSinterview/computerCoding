@@ -1,0 +1,49 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+// 满足要求最小和
+
+func main() {
+	var n1, n2 int
+	fmt.Scan(&n1)
+	arr1 := make([]int, n1)
+	for i := range arr1 {
+		var x int
+		fmt.Scan(&x)
+		arr1[i] = x
+	}
+	fmt.Scan(&n2)
+	arr2 := make([]int, n2)
+	for i := range arr2 {
+		var x int
+		fmt.Scan(&x)
+		arr2[i] = x
+	}
+	var m int
+	fmt.Scan(&m)
+	sort.Ints(arr1)
+	sort.Ints(arr2)
+	var res int
+	j1, j2 := 0, 0
+	for i := 0; i < m; i++ {
+		res += arr1[j1] + arr2[j2]
+		x, y := 5000, 5000
+		if j1+1 < len(arr1) {
+			x = arr1[j1+1] + arr2[j2]
+		}
+		if j2+1 < len(arr2) {
+			y = arr1[j1] + arr2[j2+1]
+		}
+		if x < y {
+			j1++
+		} else {
+			j2++
+		}
+	}
+
+	fmt.Println(res)
+}

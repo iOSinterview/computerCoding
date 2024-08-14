@@ -1,0 +1,34 @@
+package main
+
+import (
+	"fmt"
+)
+
+// 最多购买宝石数目
+
+func main() {
+	var n int
+	fmt.Scan(&n)
+	games := make([]int, n)
+	for i := range games {
+		fmt.Scan(&games[i])
+	}
+	var v int
+	fmt.Scan(&v)
+
+	var res int
+	var l, r int
+	win := 0
+	for r < len(games) {
+		win += games[r]
+		r++
+		if win <= v {
+			res = max(res, r-l)
+			continue
+		}
+		win -= games[l]
+		l++
+	}
+
+	fmt.Println(res)
+}

@@ -1,0 +1,40 @@
+package main
+
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
+
+// 字符串统计
+func main() {
+	var s string
+	fmt.Scan(&s)
+	fmt.Println(s)
+
+	strs := strings.Split(s, "@")
+	s1 := strings.Split(strs[0], ",")
+	s2 := strings.Split(strs[1], ",")
+	mp := map[byte]int{}
+	for _, s := range s2 {
+		x, _ := strconv.Atoi(s[2:])
+		mp[s[0]] += x
+	}
+
+	for i, s := range s1 {
+		if q, ok := mp[s[0]]; !ok {
+			fmt.Printf("%s", s)
+			if i < len(s)-1 {
+				fmt.Printf(",")
+			}
+		} else {
+			x, _ := strconv.Atoi(s[2:])
+			if x > q {
+				fmt.Printf("%c:%d", s[0], x-q)
+				if i < len(s)-1 {
+					fmt.Printf(",")
+				}
+			}
+		}
+	}
+}

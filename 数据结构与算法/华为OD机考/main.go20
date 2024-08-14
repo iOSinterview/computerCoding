@@ -1,0 +1,121 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+// 悄悄话
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func buildTree(nums []int) *TreeNode {
+	if len(nums) == 0 {
+		return nil
+	}
+
+	root := &TreeNode{Val: nums[0]}
+	que := []*TreeNode{root}
+	i := 1
+	for len(que) > 0 && i < len(nums) {
+		q := que[0]
+		que = que[1:]
+		if i < len(nums) {
+			q.Left = &TreeNode{Val: nums[i]}
+			que = append(que, q.Left)
+		}
+		i++
+		if i < len(nums) {
+			q.Right = &TreeNode{Val: nums[i]}
+			que = append(que, q.Right)
+		}
+		i++
+	}
+	return root
+}
+
+func maxTime(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+
+	l := maxTime(root.Left)
+	r := maxTime(root.Right)
+	return root.Val + max(l, r)
+}
+
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+	str, _ := reader.ReadString('\n')
+	s := strings.Split(strings.TrimSpace(str), " ")
+	n := len(s)
+	nums := make([]int, n)
+	for i, c := range s {
+		x, _ := strconv.Atoi(c)
+		nums[i] = x
+	}
+
+	root := buildTree(nums)
+	fmt.Println(maxTime(root))
+
+	que := []*TreeNode{root}
+	fmt.Println(root.Val)
+	for len(que) > 0 {
+		sz := len(que)
+		for i := 0; i < sz; i++ {
+			q := que[0]
+			que = que[1:]
+			if q.Left != nil {
+				fmt.Printf("%d ", q.Left.Val)
+				que = append(que, q.Left)
+			} else {
+				fmt.Printf("-1 ")
+			}
+			if q.Right != nil {
+				fmt.Printf("%d ", q.Right.Val)
+				que = append(que, q.Right)
+			} else {
+				fmt.Printf("-1 ")
+			}
+		}
+		fmt.Println()
+	}
+}
+
+// func main() {
+// 	reader := bufio.NewReader(os.Stdin)
+// 	str, _ := reader.ReadString('\n')
+// 	s := strings.Split(strings.TrimSpace(str), " ")
+// 	n := len(s)
+// 	nums := make([]int, n)
+// 	for i, c := range s {
+// 		x, _ := strconv.Atoi(c)
+// 		nums[i] = x
+// 	}
+
+// 	var res int
+// 	que := [][2]int{{0, 0}}
+// 	for len(que) > 0 {
+// 		sz := len(que)
+// 		for i := 0; i < sz; i++ {
+// 			q := que[0]
+// 			que = que[1:]
+// 			res = max(res, q[1])
+// 			t := 2 * q[0]
+// 			if t+1 < len(nums) && nums[t+1] != -1 {
+// 				que = append(que, [2]int{t + 1, nums[t+1] + q[1]})
+// 			}
+// 			if t+2 < len(nums) && nums[t+2] != -1 {
+// 				que = append(que, [2]int{t + 2, nums[t+2] + q[1]})
+// 			}
+// 		}
+// 	}
+
+// 	fmt.Println(res)
+// }

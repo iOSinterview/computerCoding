@@ -1,0 +1,46 @@
+package main
+
+import "fmt"
+
+type TreeNode struct {
+	Val                 int
+	Left, Middle, Right *TreeNode
+}
+
+// 三叉搜索树
+func main() {
+	var n int
+	fmt.Scan(&n)
+
+	var root *TreeNode
+	for i := 0; i < n; i++ {
+		var x int
+		fmt.Scan(&x)
+		root = insert(root, x)
+	}
+	fmt.Println(getHeight(root))
+}
+
+func insert(root *TreeNode, x int) *TreeNode {
+	if root == nil {
+		return &TreeNode{Val: x}
+	}
+	if x < root.Val-500 {
+		root.Left = insert(root.Left, x)
+	} else if x > root.Val-500 {
+		root.Right = insert(root.Right, x)
+	} else {
+		root.Middle = insert(root.Middle, x)
+	}
+	return root
+}
+
+func getHeight(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	l := getHeight(root.Left)
+	m := getHeight(root.Middle)
+	r := getHeight(root.Right)
+	return 1 + max(l, m, r)
+}

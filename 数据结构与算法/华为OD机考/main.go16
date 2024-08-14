@@ -1,0 +1,33 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
+
+// 找座位
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+	str, _ := reader.ReadString('\n')
+	s := strings.TrimSpace(str)
+
+	var res int
+	for i, c := range s {
+		if c == '1' {
+			continue
+		}
+		if i == 0 && i+1 < len(s) && s[i+1] == '1' {
+			continue
+		}
+		if s[i-1] == '1' || (i+1 < len(s) && s[i+1] == '1') {
+			continue
+		}
+		if i == len(s)-1 && i-1 >= 0 && s[i-1] == '1' {
+			continue
+		}
+		res++
+	}
+	fmt.Println(res)
+}

@@ -1,0 +1,50 @@
+package main
+
+import (
+	"fmt"
+)
+
+// 分组问题
+func main() {
+	nums := make([]int, 10)
+	sum := 0
+	for i := range nums {
+		fmt.Scan(&nums[i])
+		sum += nums[i]
+	}
+
+	cap := sum / 2
+	dp := make([]int, cap+1)
+	for _, vi := range nums {
+		for j := cap; j >= vi; j-- {
+			dp[j] = max(dp[j], dp[j-vi]+vi)
+		}
+	}
+
+	fmt.Println(sum - 2*dp[cap])
+	// var dfs func(int, int, int)
+	// dfs = func(start, cur, cnt int) {
+	// 	// 终止条件
+	// 	if cnt == 5 {
+	// 		res = min(res, abs(sum-2*cur))
+	// 		return
+	// 	}
+	// 	// 循环
+	// 	for i := start; i < len(nums); i++ {
+	// 		// 跳过
+
+	// 		// 递归
+	// 		dfs(i+1, cur+nums[i], cnt+1)
+	// 	}
+	// }
+
+	// dfs(0, 0, 0)
+	// fmt.Println(res)
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}

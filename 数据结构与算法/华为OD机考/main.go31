@@ -1,0 +1,57 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+type student struct {
+	name  string
+	score [10]int
+}
+
+// 学生排名
+func main() {
+	var n, m int
+	fmt.Scan(&n, &m)
+	mp := map[string]int{}
+	for i := 0; i < m; i++ {
+		var s string
+		fmt.Scan(&s)
+		mp[s] = i
+	}
+	stu := make([]student, n)
+	for i := range stu {
+		fmt.Scan(&stu[i].name)
+		for j := 0; j < m; j++ {
+			fmt.Scan(&stu[i].score[j])
+		}
+	}
+
+	var s string
+	fmt.Scan(&s)
+	if v, ok := mp[s]; !ok {
+		sort.Slice(stu, func(i, j int) bool {
+			sumi, sumj := 0, 0
+			for k := 0; k < m; k++ {
+				sumi += stu[i].score[k]
+				sumj += stu[j].score[k]
+			}
+			if sumi == sumj {
+				return stu[i].name < stu[j].name
+			}
+			return sumi > sumj
+		})
+	} else {
+		sort.Slice(stu, func(i, j int) bool {
+			if stu[i].score[v] == stu[j].score[v] {
+				return stu[i].name < stu[j].name
+			}
+			return stu[i].score[v] > stu[j].score[v]
+		})
+	}
+
+	for _, v := range stu {
+		fmt.Printf("%s ", v.name)
+	}
+}

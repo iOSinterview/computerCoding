@@ -1,0 +1,47 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"sort"
+	"strconv"
+	"strings"
+)
+
+// 爱吃蟠桃的孙悟空
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+	str, _ := reader.ReadString('\n')
+	s := strings.Split(strings.TrimSpace(str), " ")
+	var H int
+	fmt.Scan(&H)
+	N := len(s)
+	nums := make([]int, N)
+	for i := range s {
+		x, _ := strconv.Atoi(s[i])
+		nums[i] = x
+	}
+	// l, r := 1, nums[N-1]
+	if N > H {
+		fmt.Println(0)
+		return
+	}
+	x := sort.Search(int(1e9), func(i int) bool {
+		return check(nums, H, i)
+	})
+	fmt.Println(x)
+}
+
+func check(nums []int, H int, speed int) bool {
+	for _, v := range nums {
+		H -= v / speed
+		if v%speed > 0 {
+			H--
+		}
+		if H < 0 {
+			return false
+		}
+	}
+	return true
+}

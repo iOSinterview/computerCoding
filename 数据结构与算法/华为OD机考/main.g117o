@@ -1,0 +1,42 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+// 转盘寿司
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+	str, _ := reader.ReadString('\n')
+	s := strings.Split(strings.TrimSpace(str), " ")
+	nums := make([]int, len(s))
+	for i := range s {
+		x, _ := strconv.Atoi(s[i])
+		nums[i] = x
+	}
+	tmp := make([]int, len(nums))
+	copy(tmp, nums)
+	nums = append(nums, tmp...)
+
+	res := make([]int, len(s))
+	for i := 0; i < len(s); i++ {
+		res[i] = nums[i]
+		for j := i + 1; j < len(nums); j++ {
+			if nums[i] > nums[j] {
+				res[i] += nums[j]
+				break
+			}
+		}
+	}
+	for i, v := range res {
+		fmt.Printf("%d", v)
+		if i < len(res)-1 {
+			fmt.Printf(" ")
+		}
+	}
+	fmt.Println()
+}

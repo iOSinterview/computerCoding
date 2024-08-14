@@ -1,0 +1,48 @@
+package main
+
+import (
+	"fmt"
+	"unicode"
+)
+
+// 字符串拼接
+
+func main() {
+	var s string
+	fmt.Scan(&s)
+	var n int
+	fmt.Scan(&n)
+
+	var res int
+	mp := map[rune]int{}
+	for _, c := range s {
+		if !unicode.IsLetter(c) {
+			fmt.Println(0)
+			return
+		}
+		mp[c]++
+	}
+	var dfs func(cnt int, pre rune)
+	dfs = func(cnt int, pre rune) {
+		// 终止条件
+		if cnt == n {
+			res++
+			return
+		}
+
+		// 循环
+		for k, v := range mp {
+			if v == 0 || k == pre {
+				continue
+			}
+			// 递归
+			mp[k]--
+			dfs(cnt+1, k)
+			mp[k]++
+		}
+	}
+
+	var tmp rune
+	dfs(0, tmp)
+	fmt.Println(res)
+}

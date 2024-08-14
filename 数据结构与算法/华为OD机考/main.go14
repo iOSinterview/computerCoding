@@ -1,0 +1,44 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+// 找出作弊的人
+
+func main() {
+	var n int
+	fmt.Scan(&n)
+	score := make([][2]int, n)
+	for i := range score {
+		var x, y int
+		fmt.Scan(&x, &y)
+		score[i] = [2]int{x, y}
+	}
+	sort.Slice(score, func(i, j int) bool {
+		return score[i][1] < score[j][1]
+	})
+	min := 300
+	res := [][2]int{}
+	for i := 1; i < n; i++ {
+		fid, fs := score[i-1][0], score[i-1][1]
+		tid, ts := score[i][0], score[i][1]
+		if tid < fid {
+			fid, tid = tid, fid
+		}
+		if ts-fs < min {
+			min = ts - fs
+			res = [][2]int{[2]int{fid, tid}}
+		} else if ts-fs == min {
+			res = append(res, [2]int{fid, tid})
+		}
+	}
+
+	sort.Slice(res, func(i, j int) bool {
+		return res[i][0] < res[j][0]
+	})
+	for _, v := range res {
+		fmt.Printf("%d %d\n", v[0], v[1])
+	}
+}

@@ -1,0 +1,73 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+// 围棋的气
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+	line1, _ := reader.ReadString('\n')
+	line2, _ := reader.ReadString('\n')
+	l1 := strings.Split(strings.TrimSpace(line1), " ")
+	l2 := strings.Split(strings.TrimSpace(line2), " ")
+	ground := [19][19]int{}
+	fmt.Println(l1)
+	for i := 1; i < len(l1); i += 2 {
+		x, _ := strconv.Atoi(l1[i-1])
+		y, _ := strconv.Atoi(l1[i])
+		ground[x][y] = 1
+	}
+	for i := 1; i < len(l2); i += 2 {
+		x, _ := strconv.Atoi(l2[i-1])
+		y, _ := strconv.Atoi(l2[i])
+		ground[x][y] = 2
+	}
+
+	var rw, rb int
+	dire := [][]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
+	mp := map[[2]int]bool{}
+	var dfs func(x, y int, q int) int
+	dfs = func(x, y int, q int) int {
+		// 终止条件
+		if ground[x][y] != q {
+			return 1 - q
+		}
+		if mp[[2]int{x, y}] {
+			return 0
+		}
+		mp[[2]int{x, y}] = true
+		// 循环
+		tmp := 0
+		for _, d := range dire {
+			nx, ny := x+d[0], y+d[1]
+			if nx < 0 || nx > 18 || ny < 0 || ny > 18 {
+				continue
+			}
+			tmp += dfs(nx, ny, q)
+		}
+		return tmp
+	}
+
+	for i := 0; i < 19; i++ {
+		for j := 0; j < 19; j++ {
+			if mp[[2]int{i, j}] {
+				continue
+			}
+			rw += dfs(i, j, 1)
+		}
+	}
+	for i := 0; i < 19; i++ {
+		for j := 0; j < 19; j++ {
+			if mp[[2]int{i, j}] {
+				continue
+			}
+			rb += dfs(i, j, 2)
+		}
+	}
+	fmt.Printf("%d %d", rw, rb)
+}

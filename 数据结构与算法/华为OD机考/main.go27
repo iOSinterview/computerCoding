@@ -1,0 +1,50 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+// 考勤信息
+func main() {
+	var n int
+	fmt.Scan(&n)
+	res := make([]bool, n)
+	for i := 0; i < n; i++ {
+		var str string
+		fmt.Scan(&str)
+		s := strings.Split(strings.TrimSpace(str), " ")
+		cnt := 0
+		var flag, q bool
+		for _, c := range s {
+			fmt.Println(c == "absent")
+			if c == "absent" {
+				q = true
+				break
+			} 
+			
+			
+			
+			else if c == "leaveearly" || c == "late" {
+				if flag {
+					q = true
+					break
+				}
+				cnt++
+				flag = true
+			} else {
+				flag = false
+			}
+		}
+		fmt.Println(!q)
+		res[i] = !q
+	}
+
+	for _, b := range res {
+		if b {
+			fmt.Printf("true ")
+		} else {
+			fmt.Printf("false ")
+		}
+	}
+}

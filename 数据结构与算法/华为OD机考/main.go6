@@ -1,0 +1,43 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+// 山脉的个数
+
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+	str, _ := reader.ReadString('\n')
+	s := strings.Split(strings.TrimSpace(str), ",")
+	nums := []int{}
+	for i := range s {
+		x, _ := strconv.Atoi(s[i])
+		nums = append(nums, x)
+	}
+	fmt.Println(nums)
+	var res int
+	pre := -1
+	lf := true
+	for _, v := range nums {
+		if v > pre {
+			pre = v
+			lf = true
+			continue
+		}
+		if lf {
+			res++
+			lf = false
+		}
+		pre = v
+
+	}
+	if lf {
+		res++
+	}
+	fmt.Println(res)
+}

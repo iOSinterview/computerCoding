@@ -1,0 +1,31 @@
+package main
+
+import "fmt"
+
+// 最多购买宝石数目
+func main() {
+	var n int
+	fmt.Scan(&n)
+	cost := make([]int, n)
+	for i := range cost {
+		fmt.Scan(&cost[i])
+	}
+	var v int
+	fmt.Scan(&v)
+
+	var l, r int
+	var cur, res int
+	for r < n {
+		cur += cost[r]
+		r++
+
+		for cur > v && l < r {
+			cur -= cost[l]
+			l++
+		}
+
+		res = max(res, r-l)
+	}
+
+	fmt.Println(res)
+}

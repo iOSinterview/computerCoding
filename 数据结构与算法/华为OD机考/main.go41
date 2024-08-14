@@ -1,0 +1,49 @@
+package main
+
+import (
+	"fmt"
+)
+
+// 小华地图寻宝
+func main() {
+	var m, n, k int
+	fmt.Scan(&m, &n, &k)
+
+	var res int
+	visited := make([][]bool, m)
+	for i := range visited {
+		visited[i] = make([]bool, n)
+	}
+
+	direct := [][]int{{-1, 0}, {0, -1}, {1, 0}, {0, 1}}
+	var dfs func(x int, y int)
+	dfs = func(x, y int) {
+		// 终止条件
+		if sumA(x, y) > k || visited[x][y] {
+			return
+		}
+		res++
+		visited[x][y] = true
+
+		// 循环条件
+		for _, d := range direct {
+			nx, ny := x+d[0], y+d[1]
+			if nx < 0 || nx >= m || ny < 0 || ny >= n {
+				continue
+			}
+			dfs(nx, ny)
+		}
+	}
+
+	dfs(0, 0)
+	fmt.Println(res)
+}
+
+func sumA(x, y int) int {
+	sum := 0
+	for x > 0 || y > 0 {
+		sum += x%10 + y%10
+		x, y = x/10, y/10
+	}
+	return sum
+}

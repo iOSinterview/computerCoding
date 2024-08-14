@@ -1,0 +1,39 @@
+package main
+
+import (
+	"fmt"
+)
+
+// 素数之积
+func main() {
+	var num int
+	fmt.Scan(&num)
+
+	if isPrime(num) {
+		fmt.Printf("1 %d", num)
+		return
+	}
+
+	for x := 3; x*x <= num; x++ {
+		if !isPrime(x) {
+			continue
+		}
+		if num%x == 0 && isPrime(num/x) {
+			fmt.Printf("%d %d", x, num/x)
+			return
+		}
+	}
+	fmt.Printf("-1 -1")
+}
+
+func isPrime(x int) bool {
+	if x <= 3 {
+		return true
+	}
+	for i := 2; i*i <= x; i++ {
+		if x%i == 0 {
+			return false
+		}
+	}
+	return true
+}

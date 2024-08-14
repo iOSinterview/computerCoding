@@ -1,0 +1,32 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+// 寻找身高相近的小朋友
+func main() {
+	var h, n int
+	fmt.Scan(&h, &n)
+	nums := make([]int, n)
+	for i := range nums {
+		fmt.Scan(&nums[i])
+	}
+	sort.Slice(nums, func(i, j int) bool {
+		if abs(nums[i]-h) == abs(nums[j]-h) {
+			return nums[i] < nums[j]
+		}
+		return abs(nums[i]-h) < abs(nums[j]-j)
+	})
+	for _, v := range nums {
+		fmt.Printf("%d ", v)
+	}
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}

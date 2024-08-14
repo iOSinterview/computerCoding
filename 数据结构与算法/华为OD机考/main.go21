@@ -1,0 +1,42 @@
+package main
+
+import (
+	"fmt"
+	"unicode"
+)
+
+// 求满足条件的最长子串的长度
+func main() {
+	var s string
+	fmt.Scan(&s)
+
+	var res, cur int
+	var l, r int
+	var flag1, flag2 bool
+	for r < len(s) {
+		c := s[r]
+		r++
+		if unicode.IsLetter(rune(c)) {
+			flag1 = true
+			cur++
+		} else {
+			flag2 = true
+		}
+		if cur <= 1 {
+			res = max(res, r-l)
+			continue
+		}
+		for cur > 1 {
+			c = s[l]
+			l++
+			if unicode.IsLetter(rune(c)) {
+				cur--
+			}
+		}
+	}
+	if flag1 && flag2 {
+		fmt.Println(res)
+		return
+	}
+	fmt.Println(-1)
+}

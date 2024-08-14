@@ -1,0 +1,35 @@
+package main
+
+import "fmt"
+
+// 寻找最富裕的小家庭
+func main() {
+	var N int
+	fmt.Scan(&N)
+	nums := make([]int, N+1)
+	for i := 1; i <= N; i++ {
+		fmt.Scan(&nums[i])
+	}
+	mp := map[int][]int{}
+	for i := 0; i < N-1; i++ {
+		var x, y int
+		fmt.Scan(&x, &y)
+		if _, ok := mp[x]; !ok {
+			mp[x] = []int{}
+		}
+		mp[x] = append(mp[x], y)
+	}
+
+	fmt.Println(mp)
+	var res int
+	for i := 1; i <= N; i++ {
+		cur := nums[i]
+		if num, ok := mp[i]; ok {
+			for _, v := range num {
+				cur += nums[v]
+			}
+		}
+		res = max(res, cur)
+	}
+	fmt.Println(res)
+}

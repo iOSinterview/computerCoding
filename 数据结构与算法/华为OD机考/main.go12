@@ -1,0 +1,44 @@
+package main
+
+import "fmt"
+
+// 最长的指定瑕疵度的元音子串
+func main() {
+	var flaw int
+	fmt.Scan(&flaw)
+	var s string
+	fmt.Scan(&s)
+
+	mp := map[byte]bool{'a': true, 'A': true, 'E': true, 'e': true,
+		'i': true, 'I': true, 'o': true, 'O': true}
+	var res int
+	l := 0
+
+	f := 0
+	for r := 0; r < len(s); r++ {
+		if !mp[s[r]] {
+			f++
+		}
+		if !mp[s[r]] || f < flaw {
+			continue
+		}
+		if f == flaw && mp[s[l]] {
+			res = max(res, r-l+1)
+		}
+		for f > flaw || !mp[s[l]] {
+			l++
+			if !mp[s[l]] {
+				f--
+			}
+			if l > r {
+				l = r
+				break
+			}
+		}
+		if f == flaw && mp[s[l]] {
+			res = max(res, r-l+1)
+		}
+	}
+
+	fmt.Println(res)
+}

@@ -1,0 +1,44 @@
+package main
+
+// 游戏分组
+
+import "fmt"
+
+func main() {
+	level := make([]int, 10)
+	sum := 0
+	for i := range level {
+		fmt.Scan(&level[i])
+		sum += level[i]
+	}
+
+	res := sum
+	var dfs func(start int, cnt int, cur int)
+	dfs = func(start int, cnt int, cur int) {
+		// 终止
+		if cnt == 5 {
+			res = min(res, abs(sum-2*cur))
+			return
+		}
+
+		// 循环
+		for i := start; i < 10; i++ {
+			if 10-i+cnt < 5 {
+				break
+			}
+
+			// 递归
+			dfs(i+1, cnt+1, cur+level[i])
+		}
+	}
+
+	dfs(0, 0, 0)
+	fmt.Println(res)
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}

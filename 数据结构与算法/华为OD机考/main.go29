@@ -1,0 +1,52 @@
+package main
+
+import "fmt"
+
+// 分配土地
+func main() {
+	var m, n int
+	fmt.Scan(&m, &n)
+	ground := make([][]int, m)
+	minPos := [501][2]int{}
+	maxPos := [501][2]int{}
+	for i := range minPos {
+		minPos[i] = [2]int{m, n}
+		maxPos[i] = [2]int{-1, -1}
+	}
+	for i := range ground {
+		ground[i] = make([]int, n)
+		for j := range ground[i] {
+			var t int
+			fmt.Scan(&t)
+			ground[i][j] = t
+			if minPos[t][0] > i {
+				minPos[t][0] = i
+			}
+			if minPos[t][1] > j {
+				minPos[t][1] = j
+			}
+			if maxPos[t][0] < i {
+				maxPos[t][0] = i
+			}
+			if maxPos[t][1] < j {
+				maxPos[t][1] = j
+			}
+		}
+	}
+
+	var res int
+	for i := 1; i <= 500; i++ {
+		x1, y1, x2, y2 := minPos[i][0], minPos[i][1], maxPos[i][0], maxPos[i][1]
+		if x1 != m && y1 != n && x2 != -1 && y2 != -1 {
+			tmp := (x2 - x1 + 1) * (y2 - y1 + 1)
+			res = max(res, tmp)
+		}
+	}
+
+	fmt.Println(res)
+
+	x, y, z 
+	y - x + z - x 
+	z - 2y + x = z - y - y + x = z - y - (y - x)
+	z 
+}

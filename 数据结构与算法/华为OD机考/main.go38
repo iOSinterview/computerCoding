@@ -1,0 +1,40 @@
+package main
+
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
+
+// 火星文计算
+func main() {
+	var s string
+	fmt.Scan(&s)
+	nums := strings.Split(strings.TrimSpace(s), "#")
+
+	var res int
+	for i := 0; i < len(nums); i++ {
+		if strings.Contains(nums[i], "$") {
+			tmps := strings.Split(nums[i], "$")
+			x, _ := strconv.Atoi(tmps[0])
+			y, _ := strconv.Atoi(tmps[1])
+			nums[i] = strconv.Itoa(dollar(x, y))
+		}
+		if i > 0 {
+			prev, _ := strconv.Atoi(nums[i-1])
+			curr, _ := strconv.Atoi(nums[i])
+			res = jing(prev, curr)
+			nums[i] = strconv.Itoa(res)
+		}
+	}
+
+	fmt.Println(res)
+}
+
+func dollar(x, y int) int {
+	return 3*x + y + 2
+}
+
+func jing(x, y int) int {
+	return 2*x + 3*y + 4
+}

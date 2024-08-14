@@ -1,0 +1,20 @@
+package main
+
+import "fmt"
+
+// 环中最长子串
+func main() {
+	var s string
+	fmt.Scan(&s)
+	var cnt int
+	for _, c := range s {
+		if c == 'o' {
+			cnt++
+		}
+	}
+	if cnt&1 == 0 {
+		fmt.Println(len(s))
+		return
+	}
+	fmt.Println(len(s) - 1)
+}

@@ -1,0 +1,61 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+	"unicode"
+)
+
+type comp struct {
+	c rune
+	x int
+}
+
+// 字符串摘要
+func main() {
+	var s string
+	fmt.Scan(&s)
+	ns := []rune{}
+	for _, c := range s {
+		if !unicode.IsLetter(c) {
+			continue
+		}
+		g := unicode.ToLower(c)
+		ns = append(ns, g)
+	}
+	cnt := [26]int{}
+	memo := make([]int, len(ns))
+	for i := len(ns) - 1; i >= 0; i-- {
+		x := int(ns[i] - 'a')
+		memo[i] = cnt[x]
+		cnt[x]++
+	}
+
+	res := []comp{}
+	for i := len(ns) - 1; i >= 0; {
+		j := i - 1
+		for ; j >= 0; j-- {
+			if ns[i] != ns[j] {
+				break
+			}
+		}
+		if i-j == 1 {
+			res = append(res, comp{ns[i], memo[i]})
+			i--
+		} else {
+			res = append(res, comp{ns[i], i - j})
+			i = j
+		}
+	}
+	fmt.Println(res)
+	sort.Slice(res, func(i, j int) bool {
+		if res[i].x == res[j].x {
+			return res[i].c < res[j].c
+		}
+		return res[i].x > res[j].x
+	})
+
+	for _, cq := range res {
+		fmt.Printf("%c%d", cq.c, cq.x)
+	}
+}

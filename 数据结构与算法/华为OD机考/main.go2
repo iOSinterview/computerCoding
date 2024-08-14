@@ -1,0 +1,64 @@
+package main
+// 机器人搬砖
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"sort"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	bricks := []int{}
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	strs := strings.Split(strings.TrimSpace(input), " ")
+	maxNum := 0
+	for i := range strs {
+		x, _ := strconv.Atoi(strs[i])
+		maxNum = max(maxNum, x)
+		bricks = append(bricks, x)
+		if len(bricks) > 8 {
+			fmt.Println(-1)
+			return
+		}
+	}
+
+	if len(bricks) == 8 {
+		fmt.Println(maxNum)
+	}
+
+	// res := maxNum
+	// left, right := 1, maxNum
+	// for left <= right {
+	// 	mid := left + (right-left)>>1
+	// 	if check(mid, 8, bricks) {
+	// 		res = mid
+	// 		right = mid - 1
+	// 	} else {
+	// 		left = mid + 1
+	// 	}
+	// }
+	res := sort.Search(maxNum, func(i int) bool {
+		return check(i, 8, bricks)
+	})
+
+	fmt.Println(res)
+}
+
+func check(energy int, n int, nums []int) bool {
+	cost := 0
+	for _, v := range nums {
+		cost += v / energy
+		if v%energy > 0 {
+			cost++
+		}
+		if cost > n {
+			return false
+		}
+	}
+
+	return true
+}

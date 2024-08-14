@@ -1,0 +1,61 @@
+package main
+// 螺旋数字矩阵
+
+import "fmt"
+
+func main() {
+	var n, m int
+	fmt.Scan(&n, &m)
+
+	col := (n + m - 1) / m
+	res := make([][]int, m)
+	for i := range res {
+		res[i] = make([]int, col)
+	}
+
+	up, down, left, right := 0, m-1, 0, col-1
+	for i := 1; i <= m*col; {
+		for j := left; j <= right; j++ {
+			if i <= n {
+				res[up][j] = i
+			}
+			i++
+		}
+		up++
+		for j := up; j <= down; j++ {
+			if i <= n {
+				res[j][right] = i
+			}
+			i++
+		}
+		right--
+		for j := right; j >= left; j-- {
+			if i <= n {
+				res[down][j] = i
+			}
+			i++
+		}
+		down--
+		for j := down; j >= up; j-- {
+			if i <= n {
+				res[j][left] = i
+			}
+			i++
+		}
+		left++
+	}
+
+	for _, r := range res {
+		for j, v := range r {
+			if v == 0 {
+				fmt.Printf("*")
+			} else {
+				fmt.Printf("%d", v)
+			}
+			if j != len(r)-1 {
+				fmt.Printf(" ")
+			}
+		}
+		fmt.Println()
+	}
+}

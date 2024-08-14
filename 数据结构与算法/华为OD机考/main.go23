@@ -1,0 +1,43 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"sort"
+	"strconv"
+	"strings"
+)
+
+// 机器人仓库搬砖
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+	str, _ := reader.ReadString('\n')
+	s := strings.Split(strings.TrimSpace(str), " ")
+	nums := make([]int, len(s))
+	for i, c := range s {
+		x, _ := strconv.Atoi(c)
+		nums[i] = x
+	}
+	fmt.Println(f(nums))
+}
+
+func f(nums []int) int {
+	x := sort.Search(int(1e9), func(i int) bool {
+		return check(nums, i, 8)
+	})
+	if x == int(1e9) {
+		return -1
+	}
+	return x
+}
+
+func check(nums []int, speed int, limit int) bool {
+	for _, x := range nums {
+		limit -= (x + speed - 1) / speed
+		if limit < 0 {
+			return false
+		}
+	}
+	return true
+}

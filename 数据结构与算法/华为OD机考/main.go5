@@ -1,0 +1,32 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
+
+// 字符串序列判定
+func main() {
+	res := -1
+	reader := bufio.NewReader(os.Stdin)
+	str1, _ := reader.ReadString('\n')
+	s := strings.TrimSpace(str1)
+	str2, _ := reader.ReadString('\n')
+	l := strings.TrimSpace(str2)
+	fmt.Println(l)
+	var j int
+	for i := 0; i < len(s); i++ {
+		for j < len(l) && l[j] != s[i] {
+			j++
+		}
+		if j >= len(l) && i < len(s)-1 {
+			res = -1
+			break
+		}
+		res = j
+	}
+
+	fmt.Println(res)
+}

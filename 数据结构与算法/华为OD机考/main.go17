@@ -1,0 +1,29 @@
+package main
+
+import "fmt"
+
+// 找朋友
+func main() {
+	var N int
+	fmt.Scan(&N)
+	height := make([]int, N)
+	for i := range height {
+		var x int
+		fmt.Scan(&x)
+		height[i] = x
+	}
+	res := make([]int, N)
+	st := []int{0}
+	for i, v := range height[1:] {
+		for len(st) > 0 && v > height[st[len(st)-1]] {
+			x := st[len(st)-1]
+			st = st[:len(st)-1]
+			res[x] = i + 1
+		}
+		st = append(st, i+1)
+	} 
+
+	for _, v := range res {
+		fmt.Printf("%d ", v)
+	}
+}

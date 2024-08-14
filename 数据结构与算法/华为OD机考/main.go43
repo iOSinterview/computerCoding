@@ -1,0 +1,63 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
+
+// 石头剪刀布游戏
+
+type gamer struct {
+	name string
+	play string
+}
+
+func main() {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	// game := []gamer{}
+	flag := [3]bool{}
+	cnt := [3][]string{} // ABC
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.TrimSpace(line) == "" {
+			break
+		}
+		s := strings.Split(strings.TrimSpace(line), " ")
+		// fmt.Println(s[0])
+		// game = append(game, gamer{s[0], s[1]})
+		// for i, v := range s {
+		// 	fmt.Println(i, v)
+		// }
+		if s[1] == "A" {
+			flag[0] = true
+			cnt[0] = append(cnt[0], s[0])
+		} else if s[1] == "B" {
+			flag[1] = true
+			cnt[1] = append(cnt[1], s[0])
+		} else {
+			flag[2] = true
+			cnt[2] = append(cnt[2], s[0])
+		}
+	}
+
+	if flag[0] && flag[1] && flag[2] {
+		return
+	}
+	if flag[0] && flag[1] {
+		for _, ss := range cnt[0] {
+			fmt.Println(ss)
+		}
+	} else if flag[1] && flag[2] {
+		for _, ss := range cnt[1] {
+			fmt.Println(ss)
+		}
+	} else {
+		for _, ss := range cnt[2] {
+			fmt.Println(ss)
+		}
+	}
+
+}
