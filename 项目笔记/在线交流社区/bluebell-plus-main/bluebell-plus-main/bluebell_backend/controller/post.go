@@ -80,7 +80,7 @@ func PostList2Handler(c *gin.Context) {
 func PostDetailHandler(c *gin.Context) {
 	// 1、获取参数(从URL中获取帖子的id)
 	postIdStr := c.Param("id")
-	postId, err := strconv.ParseInt(postIdStr, 10, 64)
+	postId, err := strconv.ParseInt(postIdStr, 10, 64) // 解析为10进制的64位整数
 	if err != nil {
 		zap.L().Error("get post detail with invalid param", zap.Error(err))
 		ResponseError(c, CodeInvalidParams)

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bluebell_backend/dao/mysql"
+	"bluebell_backend/logic"
 	"bluebell_backend/models"
 	"bluebell_backend/pkg/snowflake"
 	"fmt"
@@ -48,15 +49,15 @@ func CommentHandler(c *gin.Context) {
 
 // CommentListHandler 评论列表
 func CommentListHandler(c *gin.Context) {
-	ids, ok := c.GetQueryArray("ids")
+	postID, ok := c.GetQuery("post_id")
 	if !ok {
 		ResponseError(c, CodeInvalidParams)
 		return
 	}
-	posts, err := mysql.GetCommentListByIDs(ids)
+	commentAll, err := logic.GetCommentListByPostID(postID)
 	if err != nil {
 		ResponseError(c, CodeServerBusy)
 		return
 	}
-	ResponseSuccess(c, posts)
+	ResponseSuccess(c, commentAll)
 }

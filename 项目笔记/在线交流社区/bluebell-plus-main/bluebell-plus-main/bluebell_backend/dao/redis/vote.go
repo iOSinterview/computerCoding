@@ -56,7 +56,7 @@ func VoteForPost(userID string, postID string, v float64) (err error) {
 	// 2和3 需要放到一个pipeline事务中操作
 	// 判断是否已经投过票 查当前用户给当前帖子的投票记录
 	key := KeyPostVotedZSetPrefix + postID
-	ov := client.ZScore(key, userID).Val()
+	ov := client.ZScore(key, userID).Val()  // 获取key中成员为userID的分值
 
 	// 更新：如果这一次投票的值和之前保存的值一致，就提示不允许重复投票
 	if v == ov {
@@ -64,9 +64,9 @@ func VoteForPost(userID string, postID string, v float64) (err error) {
 	}
 	var op float64
 	if v > ov {
-		op = 1
+		op = 1  // +分数
 	} else {
-		op = -1
+		op = -1 // -分数
 	}
 	diffAbs := math.Abs(ov - v)                // 计算两次投票的差值
 	pipeline := client.TxPipeline()            // 事务操作
@@ -78,7 +78,7 @@ func VoteForPost(userID string, postID string, v float64) (err error) {
 	}
 	// 3、记录用户为该帖子投票的数据
 	if v == 0 {
-		_, err = client.ZRem(key, postID).Result()
+		_, err = client.ZRem(key, userID).Result() // 从有序集合中移除指定的成员
 	} else {
 		pipeline.ZAdd(key, redis.Z{ // 记录已投票
 			Score:  v, // 赞成票还是反对票

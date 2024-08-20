@@ -22,17 +22,17 @@ func CreateComment(comment *models.Comment) (err error) {
 	return
 }
 
-func GetCommentListByIDs(ids []string) (commentList []*models.Comment, err error) {
-	sqlStr := `select comment_id, content, post_id, author_id, parent_id, create_time
+func GetCommentListByIDs(post_id string) (commentList []*models.Comment, err error) {
+	sqlStr := `select comment_id, content, post_id, author_id, parent_id, update_time
 	from comment
-	where comment_id in (?)`
+	where post_id = ?`
 	// 动态填充id
-	query, args, err := sqlx.In(sqlStr, ids)
-	if err != nil {
-		return
-	}
-	// sqlx.In 返回带 `?` bindVar 的查询语句, 我们使用Rebind()重新绑定它
-	query = db.Rebind(query)
-	err = db.Select(&commentList, query, args...)
+	// query, args, err := sqlx.In(sqlStr, post_id)
+	// if err != nil {
+	// 	return
+	// }
+	// // sqlx.In 返回带 `?` bindVar 的查询语句, 我们使用Rebind()重新绑定它
+	// query = db.Rebind(query)
+	err = db.Select(&commentList, sqlStr,post_id)
 	return
 }

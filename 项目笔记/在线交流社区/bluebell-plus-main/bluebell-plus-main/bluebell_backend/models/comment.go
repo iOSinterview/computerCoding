@@ -9,4 +9,11 @@ type Comment struct {
 	AuthorID   uint64    `db:"author_id" json:"author_id"`
 	Content    string    `db:"content" json:"content"`
 	CreateTime time.Time `db:"create_time" json:"create_time"`
+	UpdateTime time.Time `db:"update_time" json:"update_time"`
+}
+
+// 包括子评论的评论
+type CommentPlus struct {
+	Comment
+	SubComment []Comment `db:"sub_comment" json:"sub_comment"`
 }
