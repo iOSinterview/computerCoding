@@ -38,7 +38,7 @@
 | /recomment | POST | 回复评论（待写） |
 | /comment   | GET  | 展开评论列表     |
 
-# `MySQL表设计`
+# MySQL表设计
 
 ## `user表`
 
@@ -134,7 +134,7 @@ CREATE TABLE `comment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ```
 
-# `Redis的key-value设计`
+# Redis的key-value设计
 
 ```go
 const (
@@ -147,6 +147,14 @@ const (
 	KeyCommunityPostSetPrefix = "bluebell-plus:community:"  // set保存每个分区下帖子的id
 )
 ```
+
+![postkey](https://s2.loli.net/2024/08/21/BtHTw1zphcR6YPU.jpg)
+
+![votekey](https://s2.loli.net/2024/08/21/MdHWfVY5O8SBqx2.jpg)
+
+![community](https://s2.loli.net/2024/08/21/OX6VCnZwc4Ie5qR.jpg)
+
+![img](https://s2.loli.net/2024/08/21/wBVemWLFfgbRpSH.png)
 
 # 结构体设计
 

@@ -21,11 +21,7 @@ func main() {
 			if c == "absent" {
 				q = true
 				break
-			} 
-			
-			
-			
-			else if c == "leaveearly" || c == "late" {
+			}else if c == "leaveearly" || c == "late" {
 				if flag {
 					q = true
 					break
