@@ -125,7 +125,7 @@ CREATE TABLE `comment` (
   `post_id` bigint(20) NOT NULL,
   `author_id` bigint(20) NOT NULL,
   `parent_id` bigint(20) NOT NULL DEFAULT '0',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `status` tinyint(3) unsigned NOT NULL DEFAULT '1',  // 评论是否审核
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
