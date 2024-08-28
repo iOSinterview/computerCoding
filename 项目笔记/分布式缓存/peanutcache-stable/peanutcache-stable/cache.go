@@ -16,7 +16,7 @@ import (
 type cache struct {
 	mu       sync.Mutex
 	lru      *lru.Cache
-	capacity int64 // 缓存最大容量
+	capacity int64 		// 缓存最大容量
 }
 
 func newCache(capacity int64) *cache {
