@@ -1,0 +1,26 @@
+syntax = "proto3"; 	// 版本声明，使用Protocol Buffers v3版本
+
+package gaocachepb;		// 包名
+
+// 指定生成的Go代码在你项目中的导入路径
+option go_package = "gaocache/gaocachepb";
+
+// 请求信息
+//message MessageName {
+//  FieldType fieldName = FieldNumber;
+//}
+message GetRequest {
+  string group = 1;	// 字段唯一标识号
+  string key = 2;
+}
+
+// 响应信息
+message GetResponse {
+  bytes value = 1;
+}
+
+// 定义服务
+service Gaocache{
+  // Get方法，这里采用普通rpc
+  rpc Get(GetRequest) returns (GetResponse);
+}
