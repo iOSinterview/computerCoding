@@ -1,4 +1,4 @@
-# Go语言中的进制转换
+## Go语言中的进制转换
 
 ---
 
@@ -67,8 +67,11 @@ func BinaryToDecimal(b string) int {
 
 ```go
 strconv.FormatInt(int64(x),2)	// 将x转为二进制
+bin := fmt.Sprintf("%08b", x)   // 将x转为二进制，八位
 strconv.FormatInt(int64(x),8)	// 将x转为八进制
+octal := fmt.Sprintf("%08o", x)	// 将x转为八进制，八位
 strconv.FormatInt(int64(x),10)	// 将x转为十六进制
+hex := fmt.Sprintf("%08X", X)   // 将x转为16进制，八位 
 ```
 
 ### 其他进制转十进制
