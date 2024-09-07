@@ -248,17 +248,52 @@ checkType(c)
 - go convey 能够自动监控文件修改并启动测试，并可以将测试结果实时输出 到 Web 界面 
 -  go convey 提供了丰富的断言简化测试用例的编写
 
-# 10、Go中new和make的作用？
+# 10、Go中new和make的区别？
 
-​		`new` 和 `make` 是两个**用于分配内存的内建函数，都在堆空间分配。**
+**共同点**：给变量分配内存。
 
-**new 函数：**`func new(Type) *Type`
+**不同点**：
 
-- 作用：创建一个类型的实例，并且返回指向该实例的指针。
+1. **作用变量类型不同**，new 给 string， int和数组分配内存， make给切片，map，channel 分配内存；
+2. 返回类型不一样，**new 返回类型的指针， make 返回类型的实例化；**
+3. new 分配的空间被清零。make 分配空间后，会进行初始化。
+4. 字节的面试官还说了一个区别，就是分配的位置，在堆上还是栈上？
 
-**make函数：**`func make(Type, size IntegerType) Type`
+只要代码逻辑允许，编译器总是倾向于把变量分配在栈上，比分配在堆上更高效。编译器倾向于让变量不逃逸。（逃逸分析是指当函数局部变量的生命周期超过函数栈帧的生命周期时，编译器把该局部变量由栈分配改为堆分配，即变量从栈上逃逸到堆上）。
 
-- 作用：用于slice、map、channel的初始化，并返回该类型初始化的实例。
+下面两个函数，返回值都是在堆上动态分配的int型变量的地址，编译器进行了逃逸分析。
+
+```go
+// go:noinline
+func newInt1() *int{
+    var a int
+    return &a
+}
+
+// go:noinline
+func newInt2() *int{
+    return new(int)
+}
+
+func main(){
+    println(*newInt1())
+}
+```
+
+newInt1() 函数如果被分配在栈上，在函数返回后，栈帧被销毁，返回的变量a的地址会变成悬挂指针，对改地址所有读写都是不合法的，会造成程序逻辑错误或崩溃。
+
+new() 与堆分配无必然联系，代码如下：
+
+```
+func New() int{
+  p := new(int)
+  return *p
+}
+```
+
+这个函数的 new()进行栈分配，因为变量的生命周期没有超过函数栈帧的生命周期。
+
+**把逻辑上没有逃逸的变量分配到堆上不会造成错误，只是效率低一些，但是把逻辑上逃逸了的变量分配到栈上就会造成悬挂指针等问题，**因此编译器只有在能够确定变量没有逃逸的情况下才会把变量分配到栈上，在能够确定变量已经逃逸或者无法确定是否逃逸的情况，都要按照已经逃逸处理。
 
 # 11、Printf()，Sprintf()，FprintF() 都是格式化输出，有什么不 同？
 
@@ -279,7 +314,13 @@ checkType(c)
 
 - 切片可以改变长度。切片是轻量级的数据结构，三个属性：指针、长度、容量。不需要指定大小。
 - 切片是地址传递（引用传递），可以通过数组来初始化，也可以通过make()来初始化，初始化的时候 len=cap，然后进行扩容。
-- 切片看上去是引用传递，但其实是值传递。当你传递一个切片时，实际上传递的是这个切片结构的副本，**包括指向底层数组的指针、长度和容量。**
+- **切片看上去是引用传递，但其实是值传递**。当你传递一个切片时，实际上传递的是这个切片结构的副本，**包括指向底层数组的指针、长度和容量。**
+
+**简洁的回答**：
+
+1. 定义方式不一样。
+2. 初始化方式不一样，数组需要指定大小，大小不改变。
+3. 在函数传递中，数组切片都是值传递。
 
 # 13、Go 语言是如何实现slice扩容的？扩容策略是什么？
 
@@ -374,19 +415,68 @@ Go中的map基于`Hash表`实现，并且使用的是`链表法`解决冲突。
 
 ​	首先是map的扩容时机，在向map插入新的key的时候，会进行以下两个条件检测
 
-- 转载因子（6.5）超过阈值。$loadFachtor=mapCount / 2^B$，B决定了bucket的数量（$2^B$)
-- overflow的bucket （溢出桶）数量过多。
+- 转载因子（6.5）超过阈值。也即平均每个bucket存储的键值对达到6.5个
+- overflow的bucket （溢出桶）数量过多（2^15）。
 
-在 Go 的 map 实现中，当 map 需要扩容时，为了避免一次性复制整个哈希表的数据导致的大量计算，**Go 采用了分批（incrementally）渐进式的复制方式。原有的 key 并不会一 次性搬迁完毕，每次最多只会搬迁 2 个 bucket。**
+## 增量扩容
+
+当负载因子过大时，就新建一个bucket，新的bucket长度是原来的2倍，然后旧bucket数据搬迁到新的bucket。 考虑到如果map存储了数以亿计的key-value，**一次性搬迁将会造成比较大的延时，Go采用分批渐进搬迁策略，即每次访问map时都会触发一次搬迁，每次搬迁2个键值对***
 
 **如果Map正在扩容，那么在删除、插入或更新元素时都会执行一次迁移操作，仅针对要变更的bucket进行扩容。这样可以确保扩容过程的平滑进行，而不会因为其他操作的干扰而中断。**
+
+下图展示了包含一个bucket满载的map(为了描述方便，图中bucket省略了value区域):
+
+[![10](assets/10.png)](https://github.com/crazyjums/learning-notes/blob/master/18-golang_面试题/images/10.png)
+
+当前map存储了7个键值对，只有1个bucket。此地负载因子为7。再次插入数据时将会触发扩容操作，扩容之后再将新插入键写入新的bucket。
+
+当第8个键值对插入时，将会触发扩容，扩容后示意图如下：
+
+[![11](assets/11.png)](https://github.com/crazyjums/learning-notes/blob/master/18-golang_面试题/images/11.png)
+
+hmap 数据结构中 oldbuckets成员bucket0，而buckets指向了新申请的bucket。新的键值对被插入新的bucket中。后续对map的访问操作会触发迁移，将oldbuckets中的键值对逐步的搬迁过来。当 oldbuckets的键值对全部搬迁完毕之后，删除oldbuckets。
+
+搬迁完成后的示意图如下：
+
+[![image-20230119085310175](assets/image-20230119085310175.png)](https://github.com/crazyjums/learning-notes/blob/master/18-golang_面试题/images/image-20230119085310175.png)
+
+数据搬迁过程中原bucket中的键值对将存在于新bucket的前面，新插入的键值对将存在于新bucket的后面。实际搬迁过程中比较复杂.
+
+## 等量扩容
+
+所谓等量扩容，实际上并不是扩大容量，而是buckets数量不变，**重新做一遍类似增量扩容的搬迁动作，把松散的键值对重新排列一次，以便bucket的使用率更高，进而保证更快的存取**。在极端场景下，比如不断地增删，而键值对正好集中在一小部分的bucket，这样会造成overflow的bucket数量增多，但负载因又不高，从而无法执行增量搬迁的情况，如下图所示：
+
+[![image-20230119090224467](assets/image-20230119090224467.png)](https://github.com/crazyjums/learning-notes/blob/master/18-golang_面试题/images/image-20230119090224467.png)
+
+上图课件，overflow的bucket中大部分是空的，访问效率会很差。此时进行一次等量扩容，即buckets数量不变，经过重新组织后overflow的bucket数量会减少，即节省了空间又提高访问效率。
 
 # 29、Map的查找？
 
 - 当key经过hash函数计算后得到hash值，共64bit，先用到最后B个bit位（这个B是hmap结构体里面的，B决定了bucket的数量（$2^B$)），找到对应的bucket；
-- 再利用hash值的高8位，找到key在bucket中的位置；
+- 再利用hash值的高8位在tophash数组中查询，如果哈希值相等且key值相等，则找到。
 - 当前bmap的bucket未找到，则查询对应的overflow bucket，有数据再对比完整的hash值；
 - 如果当前map处于数据迁移状态，则优先从oldbuckets中找。
+
+注：如果查找不到，也不会返回空值，而是返回相应类型的 0 值。
+
+# Map 插入过程
+
+新元素插入过程如下：
+
+1. 根据key值计算哈希值。
+2. 取哈希值低位与 hmap.B取模确定 bucket 位置。
+3. 查找该 key 是否已经存在，如果存在则直接更新值。
+4. 如果没有找到将key，将key插入。
+
+# golang那些类型可以作为 map key ？
+
+**不能作为 map key 的类型包括：**
+
+- slices
+- maps
+- functions
+
+因为这些类型都不适合作为比较
 
 # 20、map是并发安全的吗？为什么？怎么解决？
 
@@ -778,3 +868,26 @@ for j := 0; j < 3; j++ {
 现在 `println(i)` 使用的 `i` 是通过函数参数传递进来的，并且 Go 语言的函数参数是按值传递的。
 
 所以相当于在这个新的匿名函数内声明了三个变量，被三个闭包函数独立引用。原理跟第一种方法是一样的。
+
+# 26、for range 的时候它的地址会发生变化么？
+
+答：在 for a,b := range c 遍历中，a 和 b 在内存中只会存在一份，即之后每次循环时遍历到的数据都是以值覆盖的方式赋给a和 b，a，b的内存地址始终不变。由于这个特性，**for 循环里面如果开协诚，不要直接把 a 或者 b 的指针传给协程。解决办法：在每次循环时，创建一个临时变量。**
+
+# 27、能介绍下 rune 类型吗和byte？
+
+rune 相当于 int32
+
+golang 中的字符串底层实现是通过byte数组的，中文字符在unicode 下占2个字节，在 utf-8 编码下占3个字节，而golang默认编码正好是 utf-8。
+
+byte 等同于 uint8 ，常用来处理 ascii 字符（1字节）或者二进制。
+
+rune 等同于 int32，常用来处理 unicode 或 utf-8 字符。
+
+# goroutine 什么情况下会阻塞？
+
+在 Go里面阻塞主要分为一下 4 种场景：
+
+1. 由于原子，互斥量或chanel操作调用导致 Goroutine 阻塞，调度器将把当前阻塞的 Goroutine 切换出去，重新调度 LRQ 上的其它 Goroutine；
+2. 由于网络请求和 IO 操作导致 Goroutine 阻塞。Go程序提供了网络轮询器（NetPoller）来处理网络请求和 IO 操作的问题，其后台通过kqueue（MacOS），epoll（Linux）或 iocp（Windows）来实现 IO 多路复用。通过使用 NetPoller 进行网络系统调用，调度器可以防止 Goroutine 在进行这些系统调用时阻塞M。这可以让 M 执行 P 的LRQ中其他的 Goroutine，而不需要创建新的 M。执行网络系统调用不需要额外的 M，网络轮询器使用系统线程，它时刻处理一个有效的事件循环，有助于减少操作系统上的调度负载。用户层严重看到的 Goroutine 中的 ”block socket” ，实现 goroutine-per-connection 简单的网络编程模式。实际上是通过 Go runtime 中的netpoller 通过Non-block socket + IO 多路复用机制 “模拟”出来的。
+3. 当调用一些系统方法的时候（如文件IO），如果系统方法调用的时候发生阻塞，这种情况下，网络轮询（NetPoller）无法使用，而进行系统调用的 G1 将阻塞当前 M1.调度器引入其它 M 来服务 M1 的P。
+4. 如果在 Goroutine 去执行一个 sleep 操作，导致 M 被阻塞了。Go 程序后台有一个监控线程 sysmon，它监控那些长时间运行的 G 任务然后设置可以强占的标识符，别的 Goroutine 就可以抢先进来执行。
