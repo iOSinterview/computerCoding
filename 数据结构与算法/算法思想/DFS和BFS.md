@@ -208,3 +208,165 @@ func levelOrder(root *TreeNode) [][]int {
 }
 ```
 
+### 跳马【hard】【BFS】
+
+马是象棋(包括中国象棋只和国际象棋）中的棋子，走法是每步直一格再斜一格，即先横着或直着走一格，然后再斜着走一个对角线，可进可退，可越过河界，俗称马走 “日“ 字。
+
+给项m行n列的棋盘(网格图)，棋盘上只有象棋中的棋子“马”，并目每个棋子有等级之分，等级为K的马可以跳1~k步(走的方式与象棋中“马”的规则一样，不可以超出棋盘位置)，**问是否能将所有马跳到同一位置**，如果存在，输出最少需要的总步数(每匹马的步数相加) ，不存在则输出-1。
+
+**注:**允许不同的马在跳的过程中跳到同一位置，坐标为(x,y)的马跳一次可以跳到到坐标为(x+1,y+2),(x+1,y-2),(x+2,y+1),(x+2,y-1). (x-1,y+2),(x-1,y-2),(x-2,y+1),(x-2,y-1),的格点上，但是不可以超出棋盘范围。
+
+#### 输入描述
+
+第一行输入m,n代表m行n列的网格图棋盘(1 <= m,n <= 25);
+
+接下来输入m行n列的网格图棋盘，如果第i行,第j列的元素为 “.” 代表此格点没有棋子，如果为数字k (1<= k <=9)，代表此格点存在等级为的“马”。
+
+#### 输出描述
+
+输出最少需要的总步数 (每匹马的步数相加)，不存在则输出-1。
+
+#### 示例1
+
+```
+输入：
+3 2
+..
+2.
+..
+
+输出：
+0
+```
+
+#### 示例2
+
+```
+输入：
+3 5
+47.48
+4744.
+7....
+
+输出：
+17
+```
+
+#### 思路
+
+- 采用BFS的思想，从当前节点出发，向外走k层
+- 采用一个二维数组arrive表示当前格点走过的棋子个数
+- 采用一个二维数组step表示当前马走到当前格点的最少步数
+- 查找arrive中值为棋子个数的的格点，以及对应step中的步数，输出最小的。
+- 如果arrive中没有值为棋子个数的格点，输出-1。
+
+#### 代码
+
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+	"strconv"
+	"unicode"
+)
+
+type Index struct {
+	x int
+	y int
+}
+
+func main() {
+	var m, n int
+	fmt.Scan(&m, &n)
+	tu := make([][]int, m)
+	qiNum := 0
+	for i := 0; i < m; i++ {
+		var s string
+		fmt.Scan(&s)
+		tu[i] = make([]int, n)
+		for j, v := range s {
+			if unicode.IsNumber(rune(v)) {
+				tu[i][j], _ = strconv.Atoi(string(s[j]))
+				qiNum++
+			}
+		}
+	}
+	arriveCnt := make([][]int, m) // 记录到此格点马的个数
+	stepCnt := make([][]int, m)   // 记录到此格点马的总步数
+	for i := 0; i < m; i++ {
+		arriveCnt[i] = make([]int, n)
+		stepCnt[i] = make([]int, n)
+	}
+
+	var bfs func(queue []Index, k int, visited [][]bool)
+	bfs = func(queue []Index, k int, visited [][]bool) {
+		// 方向数组
+		dicretion := [][]int{
+			{1, 2}, {1, -2}, {2, 1}, {2, -1},
+			{-1, 2}, {-1, -2}, {-2, 1}, {-2, -1},
+		}
+		step := 0
+		for len(queue) > 0 && step <= k {
+			cur := queue[0]
+			// 遍历方向
+			for _, dxy := range dicretion {
+				var newIdx Index
+				newIdx.x = cur.x + dxy[0]
+				newIdx.y = cur.y + dxy[1]
+
+				if newIdx.x >= 0 && newIdx.x < m && newIdx.y >= 0 && newIdx.y < n && visited[newIdx.x][newIdx.y] == false {
+					arriveCnt[newIdx.x][newIdx.y]++
+					queue = append(queue, newIdx)
+					stepCnt[newIdx.x][newIdx.y] += step
+					visited[newIdx.x][newIdx.y] = true
+				}
+			}
+			step++
+			// 方向遍历完，出队
+			queue = queue[1:]
+		}
+	}
+
+	// 遍历地图，对每个棋子进行BFS
+	fmt.Println(tu)
+	for i := 0; i < m; i++ {
+		queue := make([]Index, 0)
+		for j := 0; j < n; j++ {
+			if tu[i][j] != 0 {
+				// 初始化是否访问
+				visited := make([][]bool, m)
+				for i := 0; i < m; i++ {
+					visited[i] = make([]bool, n)
+				}
+				// 将当前棋子加入队列，对当前棋子进行BFS，标记当前位置访问
+				arriveCnt[i][j]++
+				stepCnt[i][j] += 0
+				visited[i][j] = true
+				queue = append(queue, Index{i, j})
+				bfs(queue, tu[i][j], visited)
+			}
+		}
+	}
+	//fmt.Println(arriveCnt)
+	//fmt.Println(stepCnt)
+	// 遍历arriveCnt,找出为qiNum的点，并输出最小的步数
+	stepMin := math.MaxInt
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			if arriveCnt[i][j] == qiNum {
+				if stepCnt[i][j] < stepMin {
+					stepMin = stepCnt[i][j]
+				}
+			}
+		}
+	}
+	if stepMin == math.MaxInt {
+		fmt.Println(-1)
+	} else {
+		fmt.Print(stepMin)
+	}
+}
+```
+
